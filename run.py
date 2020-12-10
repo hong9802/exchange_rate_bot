@@ -2,6 +2,7 @@ import schedule
 import datetime
 import exchange_rate
 import tweet
+import tweepy
 import time
 
 def run_weekday_compare():
@@ -26,13 +27,16 @@ def make_sentence(country="KRW"):
 
 def start_job():
     COUNTRY = ["KRW", "JPY"]
-    if(run_weekday_compare() == 1):
-        api = tweet.login_tweet()
-        for co in COUNTRY:
-            sentence = make_sentence(co)
-            api.update_status(sentence)
-    else:
-        pass
+    try:
+        if(run_weekday_compare() == 1):
+            api = tweet.login_tweet()
+            for co in COUNTRY:
+                sentence = make_sentence(co)
+                api.update_status(sentence)
+        else:
+            pass
+    except tweepy.TweepError as e:
+        print(e.reason)
 
 schedule.every().day.at("15:00").do(start_job)
 while True:
